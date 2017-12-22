@@ -9,6 +9,7 @@
 import UIKit
 import Firebase
 import ChameleonFramework
+import UserNotifications
 
 
 class ChatViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
@@ -27,6 +28,18 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
+        
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { (didAllow, error) in
+            
+            if error != nil {
+                print ("Failed")
+            } else {
+                print("Success")
+            }
+            
+        }
         
         //TODO: Set yourself as the delegate and datasource here:
         messageTableView.delegate = self
@@ -53,7 +66,7 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
         messageTableView.separatorStyle = .none
     }
     
-    
+   
 
     ///////////////////////////////////////////
     
@@ -101,6 +114,7 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
     func configureTableView () {
         messageTableView.rowHeight = UITableViewAutomaticDimension
         messageTableView.estimatedRowHeight = 120.0
+        
     }
     
     
@@ -146,6 +160,8 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     
     @IBAction func sendPressed(_ sender: AnyObject) {
+        
+        
         //TODO: Send the message to Firebase and save it in our database
         
         messageTextfield.endEditing(true)
@@ -171,12 +187,17 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
         }
         
+     
+      
+        
         
     }
     
     //TODO: Create the retrieveMessages method here:
     
     func retrieveMessages () {
+        
+        
         
         let messageDB = Database.database().reference().child("Messages")
         
@@ -191,15 +212,40 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
             message.messageBody = text
             message.sender = sender
             
+            self.messageArray.reverse()
             self.messageArray.append(message)
+            self.messageArray.reverse()
+            
+            
             
             self.configureTableView()
             self.messageTableView.reloadData()
+            
             
         }
         
     }
 
+    
+    func timeedNotification (inSeconds: TimeInterval, completion: @escaping (_ Success: Bool) -> ()) {
+        let content = UNMutableNotificationContent ()
+        content.title = "Message from private ChatApp"
+        //content.subtitle = "Message from private ChatApp"
+        //content.body = "Message from private ChatApp"
+        content.badge = 0
+        
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: inSeconds, repeats: false)
+        
+        let request = UNNotificationRequest(identifier: "Messege", content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(request) { (error) in
+            if error != nil {
+                completion(false)
+            } else {
+                completion (true)
+            }
+        }
+    }
     
     
     
@@ -217,4 +263,5 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
     
 
 
+    
 }

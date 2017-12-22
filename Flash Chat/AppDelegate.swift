@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import UserNotifications
 
 
 
@@ -22,9 +23,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //TODO: Initialise and Configure your Firebase here:
         FirebaseApp.configure()
         
+//        if Auth.auth().currentUser == nil {
+//            let storibord = UIStoryboard(name: "Main", bundle: Bundle.main)
+//            let authVC = storibord.instantiateViewController(withIdentifier: "welcomeVC")
+//            window?.makeKeyAndVisible()
+//            window?.rootViewController?.present(authVC, animated: true, completion: nil)
+//        }
+//
+        
+        
+        
+        
+        
 //        let myDatabase = Database.database().reference()
         
 //        myDatabase.setValue("Data data data")
+        
+        UNUserNotificationCenter.current().delegate = self
         
         return true
     }
@@ -65,4 +80,17 @@ let CLIENT_KEY = "UMkw6hwriImwSAEtwxlMbrJXtcccrTR6jdcRS9IN"
 
 
 }
+
+
+
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler(.alert)
+    }
+}
+
+
+
+
+
 
